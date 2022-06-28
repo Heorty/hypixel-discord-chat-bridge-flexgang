@@ -1,4 +1,4 @@
-# Hypixel Discord Chat Bridge
+# Hypixel Flexgang Discord Chat Bridge
 
 A two-way chat bridge between [Hypixel](https://hypixel.net/) guild chat and a [Discord](https://discord.com/) channel. The application utilizes [Discord.js-light](https://github.com/timotejroiko/discord.js-light) for communicating with Discord, and [Mineflayer](https://github.com/PrismarineJS/mineflayer) for communicating with Hypixel.
 
@@ -8,7 +8,7 @@ A two-way chat bridge between [Hypixel](https://hypixel.net/) guild chat and a [
 
 ## Table of Content
 
-- [Hypixel Discord Chat Bridge](#hypixel-discord-chat-bridge)
+- [Hypixel Flexgang Discord Chat Bridge](#hypixel-flexgang-discord-chat-bridge)
   - [Table of Content](#table-of-content)
   - [Installation using NodeJS](#installation-using-nodejs)
     - [Prerequisites](#prerequisites)
