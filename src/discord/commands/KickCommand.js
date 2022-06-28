@@ -7,6 +7,7 @@ class KickCommand extends DiscordCommand {
     this.name = 'kick'
     this.aliases = ['k']
     this.description = 'Kicks the given user from the guild'
+    this.level = 3
   }
 
   onCommand(message) {

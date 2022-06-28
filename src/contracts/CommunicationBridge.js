@@ -15,8 +15,20 @@ class CommunicationBridge {
     return this.bridge.onBroadcast(event)
   }
 
-  broadcastPlayerToggle(event) {
-    return this.bridge.onPlayerToggle(event)
+  broadcastSimpleMessage(event) {
+    return this.bridge.onBroadcastSimpleMessage(event)
+  }
+  
+  broadcastSCWebhook(message) {
+    return this.bridge.onBroadcastSCWebhook(message)
+  }
+
+  broadcastSenitherWebhook(message) {
+    return this.bridge.onBroadcastSenitherWebhook(message)
+  }
+
+  broadcastPlayerToggle(event, type) {
+    return this.bridge.onPlayerToggle(event, type)
   }
 
   broadcastCleanEmbed(event) {

@@ -7,6 +7,7 @@ class RelogCommand extends DiscordCommand {
     this.name = 'relog'
     this.aliases = ['r']
     this.description = 'Relogs the minecraft client after a given period of time'
+    this.level = 4
   }
 
   onCommand(message) {
@@ -23,6 +24,13 @@ class RelogCommand extends DiscordCommand {
 
     delay = Math.min(Math.max(delay, 5), 300)
 
+    this.discord.client.channels.fetch(this.discord.app.config.discord.guildMemberChannel).then(channel => {
+      discord.app.api.client.getGuild(this.discord.app.config.minecraft.guildId).then((guildData) => {
+        channel.setName(`Guild Members: ${Object.keys(guildData.guild.members).length}`)
+
+      }).catch((err) => { console.error('Error!' + err) })
+    })
+
     return this.relogWithDelay(message, delay)
   }
 
@@ -31,6 +39,8 @@ class RelogCommand extends DiscordCommand {
     this.discord.app.minecraft.bot.quit('Relogging')
 
     message.reply(`The Minecraft account have disconnected from the server! Reconnecting in ${delay == 0 ? 5 : delay} seconds.`)
+
+    
   }
 }
 

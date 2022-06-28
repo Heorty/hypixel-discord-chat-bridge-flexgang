@@ -1,6 +1,11 @@
+const res = require("express/lib/response")
+
 class StateHandler {
   constructor(discord) {
     this.discord = discord
+    this.updateGuildMembers = null
+    this.updateDiscordMembers = null
+    this.updateOnline = null
   }
 
   async onReady() {
@@ -19,7 +24,18 @@ class StateHandler {
         }
       })
     })
+
+    updateDiscordMembersChannel(this.discord)
+    updateGMembersChannel(this.discord)
+
+    this.updateGuildMembers = setInterval(updateGMembersChannel, 3600000, this.discord)
+    this.updateDiscordMembers = setInterval(updateDiscordMembersChannel, 3600000, this.discord)
+    this.updateOnline = setInterval(updateOnlineGMembersCHannel, 300000, this.discord)
+
   }
+
+
+
 
   onClose() {
     this.discord.client.channels.fetch(this.discord.app.config.discord.channel).then(channel => {
@@ -46,4 +62,29 @@ async function getWebhook(discord) {
   }
 }
 
+async function updateGMembersChannel(discord) {
+  discord.app.log.discord('Refreshing Guild Member Count')
+  return discord.client.channels.fetch(discord.app.config.discord.guildMemberChannel).then(channel => {
+    discord.app.api.client.getGuild(discord.app.config.minecraft.guildId).then((guildData) => {
+      channel.setName(`Guild Members: ${Object.keys(guildData.guild.members).length}`)
+
+    }).catch((err) => { console.error('Error!' + err) })
+  })
+}
+
+async function updateDiscordMembersChannel(discord) {
+  discord.app.log.discord('Refreshing Discord Member Count')
+  return discord.client.channels.fetch(discord.app.config.discord.discordMemberChannel).then(channel => {
+    discord.client.guilds.fetch(discord.app.config.discord.guildId).then(guild => {
+      channel.setName(`Members: ${guild.memberCount}`)
+    })
+      
+
+  })
+}
+
+async function updateOnlineGMembersCHannel(discord) {
+  discord.app.log.discord('Refreshing Online Member Count')
+  return discord.app.minecraft.bot.chat('/g online')
+}
 module.exports = StateHandler

@@ -13,8 +13,6 @@ class Logger {
     return console.log(chalk.bgCyan.black(`[${this.getCurrentTime()}] Express >`) + ' ' + chalk.cyan(message))
   }
 
-<<<<<<< Updated upstream
-=======
   api(message) {
     return console.log(chalk.bgYellow.black(`[${this.getCurrentTime()}] API >`) + ' ' + chalk.yellow(message))
   }
@@ -25,7 +23,6 @@ class Logger {
 
   }
 
->>>>>>> Stashed changes
   warn(message) {
     return console.log(chalk.bgYellow.black(`[${this.getCurrentTime()}] Warning >`) + ' ' + chalk.yellow(message))
   }

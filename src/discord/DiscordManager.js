@@ -2,6 +2,8 @@ const CommunicationBridge = require('../contracts/CommunicationBridge')
 const StateHandler = require('./handlers/StateHandler')
 const MessageHandler = require('./handlers/MessageHandler')
 const CommandHandler = require('./CommandHandler')
+
+
 const Discord = require('discord.js-light')
 
 class DiscordManager extends CommunicationBridge {
@@ -11,7 +13,8 @@ class DiscordManager extends CommunicationBridge {
     this.app = app
 
     this.stateHandler = new StateHandler(this)
-    this.messageHandler = new MessageHandler(this, new CommandHandler(this))
+    this.commandHandler = new CommandHandler(this)
+    this.messageHandler = new MessageHandler(this, this.commandHandler)
   }
 
   connect() {
@@ -27,11 +30,8 @@ class DiscordManager extends CommunicationBridge {
     this.client.on('ready', () => this.stateHandler.onReady())
     this.client.on('message', message => this.messageHandler.onMessage(message))
 
-<<<<<<< Updated upstream
-=======
 
 
->>>>>>> Stashed changes
     this.client.login(this.app.config.discord.token).catch(error => {
       this.app.log.error(error)
 
@@ -41,7 +41,11 @@ class DiscordManager extends CommunicationBridge {
     process.on('SIGINT', () => this.stateHandler.onClose())
   }
 
-  onBroadcast({ username, message, guildRank }) {
+  onBroadcast({
+    username,
+    message,
+    guildRank
+  }) {
     this.app.log.broadcast(`${username} [${guildRank}]: ${message}`, `Discord`)
     switch (this.app.config.discord.messageMode.toLowerCase()) {
       case 'bot':
@@ -66,7 +70,10 @@ class DiscordManager extends CommunicationBridge {
       case 'webhook':
         message = message.replace(/@/g, '') // Stop pinging @everyone or @here
         this.app.discord.webhook.send(
-          message, { username: username, avatarURL: 'https://www.mc-heads.net/avatar/' + username }
+          message, {
+          username: `${username} [${guildRank} 🎮]`,
+          avatarURL: 'https://www.mc-heads.net/avatar/' + username
+        }
         )
         break
 
@@ -75,9 +82,6 @@ class DiscordManager extends CommunicationBridge {
     }
   }
 
-<<<<<<< Updated upstream
-  onBroadcastCleanEmbed({ message, color }) {
-=======
   onBroadcastSimpleMessage(message) {
     this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
       channel.send(message)
@@ -106,7 +110,6 @@ class DiscordManager extends CommunicationBridge {
     message,
     color
   }) {
->>>>>>> Stashed changes
     this.app.log.broadcast(message, 'Event')
 
     this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
@@ -119,7 +122,12 @@ class DiscordManager extends CommunicationBridge {
     })
   }
 
-  onBroadcastHeadedEmbed({ message, title, icon, color }) {
+  onBroadcastHeadedEmbed({
+    message,
+    title,
+    icon,
+    color
+  }) {
     this.app.log.broadcast(message, 'Event')
 
     this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
@@ -136,7 +144,11 @@ class DiscordManager extends CommunicationBridge {
     })
   }
 
-  onPlayerToggle({ username, message, color }) {
+  onPlayerToggle({
+    username,
+    message,
+    color
+  }, type) {
     this.app.log.broadcast(username + ' ' + message, 'Event')
 
     switch (this.app.config.discord.messageMode.toLowerCase()) {
@@ -156,11 +168,19 @@ class DiscordManager extends CommunicationBridge {
         break
 
       case 'webhook':
-        this.app.discord.webhook.send({
-          username: username, avatarURL: 'https://www.mc-heads.net/avatar/' + username, embeds: [{
-            color: color,
-            description: `${username} ${message}`,
-          }]
+
+        this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
+          switch (type) {
+            case "join":
+              channel.send(`>>> <:join:943866143259648060> **${username}** joined.`)
+              break;
+            case "leave":
+              channel.send(`>>> <:left:943866472306995210> **${username}** left.`)
+              break;
+
+            default:
+              break;
+          }
         })
         break
 

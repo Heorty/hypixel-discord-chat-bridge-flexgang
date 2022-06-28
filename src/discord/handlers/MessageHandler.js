@@ -5,6 +5,10 @@ class MessageHandler {
   }
 
   async onMessage(message) {
+    if (this.shouldOverideMessage(message)) {
+      return this.discord.app.minecraft.bot.chat(message.content)
+    }
+
     if (!this.shouldBroadcastMessage(message)) {
       return
     }
@@ -54,7 +58,7 @@ class MessageHandler {
     return message
       .replace(/<[@|#|!|&]{1,2}(\d+){16,}>/g, '\n')
       .replace(/<:\w+:(\d+){16,}>/g, '\n')
-      .replace(/[^\p{L}\p{N}\p{P}\p{Z}]/gu, '\n')
+      .replace(/[^\p{L}\p{N}\p{P}\p{Z}\+$\^\|~`<>]/gu, '\n')
       .split('\n')
       .map(part => {
         part = part.trim()
@@ -66,6 +70,10 @@ class MessageHandler {
 
   shouldBroadcastMessage(message) {
     return !message.author.bot && message.channel.id == this.discord.app.config.discord.channel && message.content && message.content.length > 0
+  }
+
+  shouldOverideMessage(message) {
+    return !message.content.startsWith('!') && !message.author.bot && message.channel.id == "945007801728630844" && message.content && message.content.length > 0
   }
 }
 

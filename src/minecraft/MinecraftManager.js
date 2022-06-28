@@ -30,16 +30,16 @@ class MinecraftManager extends CommunicationBridge {
       port: this.app.config.server.port,
       username: this.app.config.minecraft.username,
       password: this.app.config.minecraft.password,
-      version: false,
+      version: "1.8.9",
       auth: this.app.config.minecraft.accountType,
     })
   }
 
   onBroadcast({ username, message, replyingTo }) {
-    this.app.log.broadcast(`${username}: ${message}`, 'Minecraft')
+    this.app.log.broadcast(`${username} > ${message}`, 'Minecraft')
 
     if (this.bot.player !== undefined) {
-      this.bot.chat(`/gc ${replyingTo ? `${username} replying to ${replyingTo}:` : `${username}:`} ${message}`)
+      this.bot.chat(`/gc ${replyingTo ? `${username} replying to ${replyingTo}:` : `${username} >`} ${message}`)
     }
   }
 }

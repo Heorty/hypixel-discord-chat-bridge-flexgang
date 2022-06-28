@@ -1,4 +1,9 @@
+
 const EventHandler = require('../../contracts/EventHandler')
+const motds = require('./motd.json')
+
+
+
 
 class StateHandler extends EventHandler {
   constructor(minecraft, command) {
@@ -17,11 +22,6 @@ class StateHandler extends EventHandler {
   onMessage(event) {
     const message = event.toString().trim()
 
-<<<<<<< Updated upstream
-    if (this.isLobbyJoinMessage(message)) {
-      this.minecraft.app.log.minecraft('Sending Minecraft client to limbo')
-      return this.bot.chat('/ac §')
-=======
     if (event.toString() == "100/100❤     100/100✎ Mana") {
       return this.bot.chat('§')
     }
@@ -64,15 +64,10 @@ class StateHandler extends EventHandler {
           setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(400, 480)}`) }, 3500)
         }
       }, 1000);
->>>>>>> Stashed changes
     }
 
     if (this.isLoginMessage(message)) {
       let user = message.split('>')[1].trim().split('joined.')[0].trim()
-<<<<<<< Updated upstream
-
-      return this.minecraft.broadcastPlayerToggle({ username: user, message: `joined.`, color: '47F049' })
-=======
       this.minecraft.broadcastPlayerToggle({ username: user, message: `joined.`, color: '47F049' }, "join")
 
       let motd = motds[Math.floor(Math.random() * motds.length)];
@@ -96,13 +91,12 @@ class StateHandler extends EventHandler {
         }
       }, 1000);
 
->>>>>>> Stashed changes
     }
 
     if (this.isLogoutMessage(message)) {
       let user = message.split('>')[1].trim().split('left.')[0].trim()
 
-      return this.minecraft.broadcastPlayerToggle({ username: user, message: `left.`, color: 'F04947' })
+      return this.minecraft.broadcastPlayerToggle({ username: user, message: `left.`, color: 'F04947' }, "leave")
     }
 
     if (this.isJoinMessage(message)) {
@@ -243,6 +237,28 @@ class StateHandler extends EventHandler {
       return this.minecraft.broadcastCleanEmbed({ message: `Player \`${user}\` not found.`, color: 'DC143C' })
     }
 
+    if (this.isOnlineMemberMessage(message)) {
+      let number = message.split(':')[1].slice(1)
+
+      return this.minecraft.app.discord.client.channels.fetch(this.minecraft.app.config.discord.onlineGuildMemberChannel).then(channel => {
+        channel.setName(`Online Members: ${number}`)
+      })
+    }
+
+    if (this.isPartyInvite(message)) {
+      let user = message.replace(/\[(.*?)\]/g, '').trim().split(/ +/g)[1]
+      this.minecraft.app.log.minecraft(`${user} used fragbot`)
+
+      this.bot.chat(`/p accept ${user}`)
+      setTimeout(() => {
+        this.bot.chat(`/pc You have 7s to join a dungeon`)
+      }, 200);
+      return setTimeout(() => {
+        this.bot.chat(`/p leave`)
+        this.bot.chat(`/lobby`)
+      }, 7000);
+    }
+
     if (!this.isGuildMessage(message)) {
       return
     }
@@ -303,6 +319,10 @@ class StateHandler extends EventHandler {
 
   isLoginMessage(message) {
     return message.startsWith('Guild >') && message.endsWith('joined.') && !message.includes(':')
+  }
+
+  isFriendLoginMessage(message) {
+    return message.startsWith('Friend >') && message.endsWith('joined.') && !message.includes(':')
   }
 
   isLogoutMessage(message) {
@@ -400,8 +420,6 @@ class StateHandler extends EventHandler {
   isPlayerNotFound(message) {
     return message.startsWith(`Can't find a player by the name of`)
   }
-<<<<<<< Updated upstream
-=======
 
 
   isTotalMemberMessage(message) {
@@ -419,7 +437,7 @@ class StateHandler extends EventHandler {
   }
 
 
->>>>>>> Stashed changes
 }
 
 module.exports = StateHandler
+

@@ -7,6 +7,7 @@ class DemoteCommand extends DiscordCommand {
     this.name = 'demote'
     this.aliases = ['down', 'd']
     this.description = 'Demotes the given user by one guild rank'
+    this.level = 3
   }
 
   onCommand(message) {

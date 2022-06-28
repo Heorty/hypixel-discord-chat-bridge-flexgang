@@ -6,7 +6,6 @@ class CommandHandler {
     this.discord = discord
 
     this.prefix = discord.app.config.discord.prefix
-
     this.commands = new Collection()
     let commandFiles = fs.readdirSync('./src/discord/commands').filter(file => file.endsWith('.js'))
     for (const file of commandFiles) {
@@ -30,7 +29,8 @@ class CommandHandler {
       return false
     }
 
-    if ((command.name != 'help' && !this.isCommander(message.member)) || (command.name == 'override' && !this.isOwner(message.author))) {
+
+    if ((command.level == 4 && !this.isOwner(message.member)) || ( command.level == 3 && !this.isCommander(message.member)) || ( command.level == 2 && !this.isMember(message.member))) {
       return message.channel.send({
         embed: {
           description: `You don't have permission to do that.`,
@@ -45,8 +45,12 @@ class CommandHandler {
     return true
   }
 
+  isMember(member) {
+    return member.roles.cache.find(r => r.id == this.discord.app.config.discord.memberRole) || member.roles.cache.find(r => r.id == this.discord.app.config.discord.commandRole) || member.id == this.discord.app.config.discord.ownerId
+  }
+
   isCommander(member) {
-    return member.roles.cache.find(r => r.id == this.discord.app.config.discord.commandRole)
+    return member.roles.cache.find(r => r.id == this.discord.app.config.discord.commandRole) || member.id == this.discord.app.config.discord.ownerId
   }
 
   isOwner(member) {
