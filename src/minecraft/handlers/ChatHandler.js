@@ -17,15 +17,86 @@ class StateHandler extends EventHandler {
   onMessage(event) {
     const message = event.toString().trim()
 
+<<<<<<< Updated upstream
     if (this.isLobbyJoinMessage(message)) {
       this.minecraft.app.log.minecraft('Sending Minecraft client to limbo')
       return this.bot.chat('/ac §')
+=======
+    if (event.toString() == "100/100❤     100/100✎ Mana") {
+      return this.bot.chat('§')
+    }
+
+    this.minecraft.app.discord.client.channels.fetch("945007801728630844").then(channel => {
+      channel.send(message).catch((error) => { });
+    }).catch((error) => {
+      console.error(error);
+    });
+    // Debug
+    // console.log(event.toAnsi())
+
+
+
+    if (this.isLobbyJoinMessage(message)) {
+      this.minecraft.app.log.minecraft('Sending Minecraft client to limbo')
+      this.bot.chat('/ac §')
+      return this.bot.chat('§')
+    }
+
+    if (this.isFriendLoginMessage(message)) {
+      let user = message.split('>')[1].trim().split('joined.')[0].trim()
+      let motd = motds[Math.floor(Math.random() * motds.length)];
+
+      return setTimeout(() => {
+        this.bot.chat(`/msg ${user} ${motd.slice(0, 80)}`)
+        if (motd.slice(80, 160)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(80, 160)}`) }, 700)
+        }
+        if (motd.slice(160, 240)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(160, 240)}`) }, 1400)
+        }
+        if (motd.slice(240, 320)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(240, 320)}`) }, 2100)
+        }
+        if (motd.slice(320, 400)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(320, 400)}`) }, 2800)
+        }
+        if (motd.slice(400, 480)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(400, 480)}`) }, 3500)
+        }
+      }, 1000);
+>>>>>>> Stashed changes
     }
 
     if (this.isLoginMessage(message)) {
       let user = message.split('>')[1].trim().split('joined.')[0].trim()
+<<<<<<< Updated upstream
 
       return this.minecraft.broadcastPlayerToggle({ username: user, message: `joined.`, color: '47F049' })
+=======
+      this.minecraft.broadcastPlayerToggle({ username: user, message: `joined.`, color: '47F049' }, "join")
+
+      let motd = motds[Math.floor(Math.random() * motds.length)];
+
+      return setTimeout(() => {
+        this.bot.chat(`/msg ${user} ${motd.slice(0, 80)}`)
+        if (motd.slice(80, 160)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(80, 160)}`) }, 700)
+        }
+        if (motd.slice(160, 240)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(160, 240)}`) }, 1400)
+        }
+        if (motd.slice(240, 320)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(240, 320)}`) }, 2100)
+        }
+        if (motd.slice(320, 400)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(320, 400)}`) }, 2800)
+        }
+        if (motd.slice(400, 480)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(400, 480)}`) }, 3500)
+        }
+      }, 1000);
+
+>>>>>>> Stashed changes
     }
 
     if (this.isLogoutMessage(message)) {
@@ -201,6 +272,16 @@ class StateHandler extends EventHandler {
       return
     }
 
+    let patern = /^[a-zA-Z]/
+    if (!patern.test(playerMessage)) {
+      try {
+        if (eval(playerMessage) !== false) {
+          this.minecraft.app.log.commands(`${username} asked ${playerMessage} = ${eval(playerMessage)}`)
+          return this.bot.chat(`/gc ${eval(playerMessage)}`)
+        }
+      } catch (error) { }
+    }
+
     this.minecraft.broadcastMessage({
       username: username,
       message: playerMessage,
@@ -319,6 +400,26 @@ class StateHandler extends EventHandler {
   isPlayerNotFound(message) {
     return message.startsWith(`Can't find a player by the name of`)
   }
+<<<<<<< Updated upstream
+=======
+
+
+  isTotalMemberMessage(message) {
+    return message.startsWith('Total Members:')
+  }
+  isOnlineMemberMessage(message) {
+    return message.startsWith('Online Members:')
+  }
+  isOfflineMemberMessage(message) {
+    return message.startsWith('Offline Members:')
+  }
+
+  isPartyInvite(message) {
+    return message.includes('has invited you to join their party') && message.startsWith('-----------------------------')
+  }
+
+
+>>>>>>> Stashed changes
 }
 
 module.exports = StateHandler

@@ -27,6 +27,11 @@ class DiscordManager extends CommunicationBridge {
     this.client.on('ready', () => this.stateHandler.onReady())
     this.client.on('message', message => this.messageHandler.onMessage(message))
 
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
     this.client.login(this.app.config.discord.token).catch(error => {
       this.app.log.error(error)
 
@@ -70,7 +75,38 @@ class DiscordManager extends CommunicationBridge {
     }
   }
 
+<<<<<<< Updated upstream
   onBroadcastCleanEmbed({ message, color }) {
+=======
+  onBroadcastSimpleMessage(message) {
+    this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
+      channel.send(message)
+    })
+  }
+
+  onBroadcastSCWebhook(message) {
+    this.app.discord.webhook.send(
+      message, {
+      username: `SkyCrypt`,
+      avatarURL: 'https://d1udgqfupqwo5g.cloudfront.net/images/uploaded.15c60893d96574c0f2c8d378d1c1ef17.png'
+    }
+    )
+  }
+
+  onBroadcastSenitherWebhook(message) {
+    this.app.discord.webhook.send(
+      message, {
+      username: `Senither`,
+      avatarURL: 'https://avatars.githubusercontent.com/u/8415349?s=128&v=4'
+    }
+    )
+  }
+
+  onBroadcastCleanEmbed({
+    message,
+    color
+  }) {
+>>>>>>> Stashed changes
     this.app.log.broadcast(message, 'Event')
 
     this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {

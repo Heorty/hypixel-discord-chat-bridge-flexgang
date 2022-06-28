@@ -18,6 +18,19 @@ class MessageHandler {
       return
     }
 
+    let patern = /^[a-zA-Z]/
+    if (!patern.test(message.content)) {
+      try {
+        
+        if (eval(message.content) !== false) {
+          return this.discord.client.channels.fetch(this.discord.app.config.discord.channel).then(channel => {
+            this.discord.app.log.commands(`${message.member.displayName} asked ${message.content} = ${eval(message.content)}`)
+            channel.send(eval(message.content))
+          })
+        }
+      } catch (error) {}
+    }
+
     this.discord.broadcastMessage({
       username: message.member.displayName,
       message: this.stripDiscordContent(message.content),
