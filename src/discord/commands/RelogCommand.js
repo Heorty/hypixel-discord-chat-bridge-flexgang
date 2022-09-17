@@ -24,13 +24,6 @@ class RelogCommand extends DiscordCommand {
 
     delay = Math.min(Math.max(delay, 5), 300)
 
-    this.discord.client.channels.fetch(this.discord.app.config.discord.guildMemberChannel).then(channel => {
-      discord.app.api.client.getGuild(this.discord.app.config.minecraft.guildId).then((guildData) => {
-        channel.setName(`Guild Members: ${Object.keys(guildData.guild.members).length}`)
-
-      }).catch((err) => { console.error('Error!' + err) })
-    })
-
     return this.relogWithDelay(message, delay)
   }
 

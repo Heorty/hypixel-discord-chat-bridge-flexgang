@@ -19,7 +19,7 @@ class SenitherApiManager {
         
     }
 
-    getWeight(user) {
+    async getWeight(user) {
         let key = this.key
         axios.get("https://api.mojang.com/users/profiles/minecraft/" + user)
             .then(function (response) {

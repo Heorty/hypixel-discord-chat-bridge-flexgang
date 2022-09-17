@@ -1,13 +1,13 @@
 const DiscordCommand = require('../../contracts/DiscordCommand')
 
 class OnlineCommand extends DiscordCommand {
+
   constructor(discord) {
     super(discord)
-
     this.name = 'online'
     this.aliases = ['on']
-    this.description = 'Manually check onlines players in the guild'
-    this.level = 2
+    this.description = 'Manually check onlines players in the guild';
+    this.level = 2;
   }
 
   onCommand(message) {

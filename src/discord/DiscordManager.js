@@ -5,6 +5,7 @@ const CommandHandler = require('./CommandHandler')
 
 
 const Discord = require('discord.js-light')
+// const { Client, GatewayIntentBits } = require('discord.js');
 
 class DiscordManager extends CommunicationBridge {
   constructor(app) {
@@ -25,7 +26,15 @@ class DiscordManager extends CommunicationBridge {
       cacheRoles: true,
       cacheEmojis: false,
       cachePresences: false,
-    })
+      // intents: [
+      //   GatewayIntentBits.Guilds,
+      //   GatewayIntentBits.GuildMessages,
+      //   GatewayIntentBits.MessageContent,
+      //   GatewayIntentBits.GuildMembers,
+      //   GatewayIntentBits.GuildWebhooks,
+      // ],
+    },
+    )
 
     this.client.on('ready', () => this.stateHandler.onReady())
     this.client.on('message', message => this.messageHandler.onMessage(message))
