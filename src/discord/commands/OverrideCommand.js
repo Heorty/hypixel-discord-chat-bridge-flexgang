@@ -7,6 +7,7 @@ class OverrideCommand extends DiscordCommand {
     this.name = 'override'
     this.aliases = ['o']
     this.description = 'Executes commands as the minecraft bot'
+    this.level = 4
   }
 
   onCommand(message) {
@@ -16,9 +17,9 @@ class OverrideCommand extends DiscordCommand {
       return message.reply(`No command specified`)
     }
 
-    this.sendMinecraftMessage(`/${args}`)
+    this.sendMinecraftMessage(`${args}`)
 
-    message.reply(`\`/${args}\` has been executed`)
+    message.reply(`\`${args}\` has been executed`)
   }
 }
 

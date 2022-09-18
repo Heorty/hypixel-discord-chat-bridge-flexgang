@@ -7,6 +7,7 @@ class RelogCommand extends DiscordCommand {
     this.name = 'relog'
     this.aliases = ['r']
     this.description = 'Relogs the minecraft client after a given period of time'
+    this.level = 4
   }
 
   onCommand(message) {
@@ -31,6 +32,8 @@ class RelogCommand extends DiscordCommand {
     this.discord.app.minecraft.bot.quit('Relogging')
 
     message.reply(`The Minecraft account have disconnected from the server! Reconnecting in ${delay == 0 ? 5 : delay} seconds.`)
+
+    
   }
 }
 

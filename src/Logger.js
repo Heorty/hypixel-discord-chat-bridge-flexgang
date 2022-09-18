@@ -13,6 +13,16 @@ class Logger {
     return console.log(chalk.bgCyan.black(`[${this.getCurrentTime()}] Express >`) + ' ' + chalk.cyan(message))
   }
 
+  api(message) {
+    return console.log(chalk.bgYellow.black(`[${this.getCurrentTime()}] API >`) + ' ' + chalk.yellow(message))
+  }
+
+  commands(message) {
+    // return cyan
+    return console.log(chalk.bgCyan.black(`[${this.getCurrentTime()}] Commands >`) + ' ' + chalk.cyan(message))
+
+  }
+
   warn(message) {
     return console.log(chalk.bgYellow.black(`[${this.getCurrentTime()}] Warning >`) + ' ' + chalk.yellow(message))
   }

@@ -1,4 +1,9 @@
+
 const EventHandler = require('../../contracts/EventHandler')
+const motds = require('./motd.json')
+
+
+
 
 class StateHandler extends EventHandler {
   constructor(minecraft, command) {
@@ -17,21 +22,81 @@ class StateHandler extends EventHandler {
   onMessage(event) {
     const message = event.toString().trim()
 
+    if (event.toString() == "100/100❤     100/100✎ Mana") {
+      return this.bot.chat('§')
+    }
+
+    this.minecraft.app.discord.client.channels.fetch("945007801728630844").then(channel => {
+      channel.send(message).catch((error) => { });
+    }).catch((error) => {
+      console.error(error);
+    });
+    // Debug
+    // console.log(event.toAnsi())
+
+
+
     if (this.isLobbyJoinMessage(message)) {
       this.minecraft.app.log.minecraft('Sending Minecraft client to limbo')
-      return this.bot.chat('/ac §')
+      this.bot.chat('/ac §')
+      return this.bot.chat('§')
+    }
+
+    if (this.isFriendLoginMessage(message)) {
+      let user = message.split('>')[1].trim().split('joined.')[0].trim()
+      let motd = motds[Math.floor(Math.random() * motds.length)];
+
+      return setTimeout(() => {
+        this.bot.chat(`/msg ${user} ${motd.slice(0, 80)}`)
+        if (motd.slice(80, 160)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(80, 160)}`) }, 700)
+        }
+        if (motd.slice(160, 240)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(160, 240)}`) }, 1400)
+        }
+        if (motd.slice(240, 320)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(240, 320)}`) }, 2100)
+        }
+        if (motd.slice(320, 400)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(320, 400)}`) }, 2800)
+        }
+        if (motd.slice(400, 480)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(400, 480)}`) }, 3500)
+        }
+      }, 1000);
     }
 
     if (this.isLoginMessage(message)) {
       let user = message.split('>')[1].trim().split('joined.')[0].trim()
+      this.minecraft.broadcastPlayerToggle({ username: user, message: `joined.`, color: 0x47F049 }, "join")
 
-      return this.minecraft.broadcastPlayerToggle({ username: user, message: `joined.`, color: '47F049' })
+      let motd = motds[Math.floor(Math.random() * motds.length)];
+
+      return setTimeout(() => {
+        this.bot.chat(`/msg ${user} ${motd.slice(0, 80)}`)
+        if (motd.slice(80, 160)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(80, 160)}`) }, 700)
+        }
+        if (motd.slice(160, 240)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(160, 240)}`) }, 1400)
+        }
+        if (motd.slice(240, 320)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(240, 320)}`) }, 2100)
+        }
+        if (motd.slice(320, 400)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(320, 400)}`) }, 2800)
+        }
+        if (motd.slice(400, 480)) {
+          setTimeout(() => { this.bot.chat(`/msg ${user} ${motd.slice(400, 480)}`) }, 3500)
+        }
+      }, 1000);
+
     }
 
     if (this.isLogoutMessage(message)) {
       let user = message.split('>')[1].trim().split('left.')[0].trim()
 
-      return this.minecraft.broadcastPlayerToggle({ username: user, message: `left.`, color: 'F04947' })
+      return this.minecraft.broadcastPlayerToggle({ username: user, message: `left.`, color: 0xF04947 }, "leave")
     }
 
     if (this.isJoinMessage(message)) {
@@ -41,7 +106,7 @@ class StateHandler extends EventHandler {
         message: `${user} joined the guild!`,
         title: `Member Joined`,
         icon: `https://mc-heads.net/avatar/${user}`,
-        color: '47F049'
+        color: 0x47F049
       })
     }
 
@@ -52,7 +117,7 @@ class StateHandler extends EventHandler {
         message: `${user} left the guild!`,
         title: `Member Left`,
         icon: `https://mc-heads.net/avatar/${user}`,
-        color: 'F04947'
+        color: 0xF04947
       })
     }
 
@@ -63,7 +128,7 @@ class StateHandler extends EventHandler {
         message: `${user} was kicked from the guild!`,
         title: `Member Kicked`,
         icon: `https://mc-heads.net/avatar/${user}`,
-        color: 'F04947'
+        color: 0xF04947
       })
     }
 
@@ -71,95 +136,95 @@ class StateHandler extends EventHandler {
       let username = message.replace(/\[(.*?)\]/g, '').trim().split(/ +/g)[0]
       let newRank = message.replace(/\[(.*?)\]/g, '').trim().split(' to ').pop().trim()
 
-      return this.minecraft.broadcastCleanEmbed({ message: `${username} was promoted to ${newRank}`, color: '47F049' })
+      return this.minecraft.broadcastCleanEmbed({ message: `${username} was promoted to ${newRank}`, color: 0x47F049 })
     }
 
     if (this.isDemotionMessage(message)) {
       let username = message.replace(/\[(.*?)\]/g, '').trim().split(/ +/g)[0]
       let newRank = message.replace(/\[(.*?)\]/g, '').trim().split(' to ').pop().trim()
 
-      return this.minecraft.broadcastCleanEmbed({ message: `${username} was demoted to ${newRank}`, color: 'F04947' })
+      return this.minecraft.broadcastCleanEmbed({ message: `${username} was demoted to ${newRank}`, color: 0xF04947 })
     }
 
     if (this.isBlockedMessage(message)) {
       let blockedMsg = message.match(/".+"/g)[0].slice(1, -1)
 
-      return this.minecraft.broadcastCleanEmbed({ message: `Message \`${blockedMsg}\` blocked by Hypixel.`, color: 'DC143C' })
+      return this.minecraft.broadcastCleanEmbed({ message: `Message \`${blockedMsg}\` blocked by Hypixel.`, color: 0xDC143C })
     }
 
     if (this.isRepeatMessage(message)) {
-      return this.minecraft.broadcastCleanEmbed({ message: `You cannot say the same message twice!`, color: 'DC143C' })
+      return this.minecraft.broadcastCleanEmbed({ message: `You cannot say the same message twice!`, color: 0xDC143C })
     }
 
     if (this.isNoPermission(message)) {
-      return this.minecraft.broadcastCleanEmbed({ message: `I don't have permission to do that!`, color: 'DC143C' })
+      return this.minecraft.broadcastCleanEmbed({ message: `I don't have permission to do that!`, color: 0xDC143C })
     }
 
     if (this.isIncorrectUsage(message)) {
-      return this.minecraft.broadcastCleanEmbed({ message: message.split("'").join("`"), color: 'DC143C' })
+      return this.minecraft.broadcastCleanEmbed({ message: message.split("'").join("`"), color: 0xDC143C })
     }
 
     if (this.isOnlineInvite(message)) {
       let user = message.replace(/\[(.*?)\]/g, '').trim().split(/ +/g)[2]
 
-      return this.minecraft.broadcastCleanEmbed({ message: `${user} was invited to the guild!`, color: '47F049' })
+      return this.minecraft.broadcastCleanEmbed({ message: `${user} was invited to the guild!`, color: 0x47F049 })
     }
 
     if (this.isOfflineInvite(message)) {
       let user = message.replace(/\[(.*?)\]/g, '').trim().split(/ +/g)[6].match(/\w+/g)[0]
 
-      return this.minecraft.broadcastCleanEmbed({ message: `${user} was offline invited to the guild!`, color: '47F049' })
+      return this.minecraft.broadcastCleanEmbed({ message: `${user} was offline invited to the guild!`, color: 0x47F049 })
     }
 
     if (this.isFailedInvite(message)) {
-      return this.minecraft.broadcastCleanEmbed({ message: message.replace(/\[(.*?)\]/g, '').trim(), color: 'DC143C' })
+      return this.minecraft.broadcastCleanEmbed({ message: message.replace(/\[(.*?)\]/g, '').trim(), color: 0xDC143C })
     }
 
     if (this.isGuildMuteMessage(message)) {
       let time = message.replace(/\[(.*?)\]/g, '').trim().split(/ +/g)[7]
 
-      return this.minecraft.broadcastCleanEmbed({ message: `Guild Chat has been muted for ${time}`, color: 'F04947' })
+      return this.minecraft.broadcastCleanEmbed({ message: `Guild Chat has been muted for ${time}`, color: 0xF04947 })
     }
 
     if (this.isGuildUnmuteMessage(message)) {
-      return this.minecraft.broadcastCleanEmbed({ message: `Guild Chat has been unmuted!`, color: '47F049' })
+      return this.minecraft.broadcastCleanEmbed({ message: `Guild Chat has been unmuted!`, color: 0x47F049 })
     }
 
     if (this.isUserMuteMessage(message)) {
       let user = message.replace(/\[(.*?)\]/g, '').trim().split(/ +/g)[3].replace(/[^\w]+/g, '')
       let time = message.replace(/\[(.*?)\]/g, '').trim().split(/ +/g)[5]
 
-      return this.minecraft.broadcastCleanEmbed({ message: `${user} has been muted for ${time}`, color: 'F04947' })
+      return this.minecraft.broadcastCleanEmbed({ message: `${user} has been muted for ${time}`, color: 0xF04947 })
     }
 
     if (this.isUserUnmuteMessage(message)) {
       let user = message.replace(/\[(.*?)\]/g, '').trim().split(/ +/g)[3]
 
-      return this.minecraft.broadcastCleanEmbed({ message: `${user} has been unmuted!`, color: '47F049' })
+      return this.minecraft.broadcastCleanEmbed({ message: `${user} has been unmuted!`, color: 0x47F049 })
     }
 
     if (this.isSetrankFail(message)) {
-      return this.minecraft.broadcastCleanEmbed({ message: `Rank not found.`, color: 'DC143C' })
+      return this.minecraft.broadcastCleanEmbed({ message: `Rank not found.`, color: 0xDC143C })
     }
 
     if (this.isAlreadyMuted(message)) {
-      return this.minecraft.broadcastCleanEmbed({ message: `This user is already muted!`, color: 'DC143C' })
+      return this.minecraft.broadcastCleanEmbed({ message: `This user is already muted!`, color: 0xDC143C })
     }
 
     if (this.isNotInGuild(message)) {
       let user = message.replace(/\[(.*?)\]/g, '').trim().split(' ')[0]
 
-      return this.minecraft.broadcastCleanEmbed({ message: `${user} is not in the guild.`, color: 'DC143C' })
+      return this.minecraft.broadcastCleanEmbed({ message: `${user} is not in the guild.`, color: 0xDC143C })
     }
 
     if (this.isLowestRank(message)) {
       let user = message.replace(/\[(.*?)\]/g, '').trim().split(' ')[0]
 
-      return this.minecraft.broadcastCleanEmbed({ message: `${user} is already the lowest guild rank!`, color: 'DC143C' })
+      return this.minecraft.broadcastCleanEmbed({ message: `${user} is already the lowest guild rank!`, color: 0xDC143C })
     }
 
     if (this.isAlreadyHasRank(message)) {
-      return this.minecraft.broadcastCleanEmbed({ message: `They already have that rank!`, color: 'DC143C' })
+      return this.minecraft.broadcastCleanEmbed({ message: `They already have that rank!`, color: 0xDC143C })
     }
 
     if (this.isTooFast(message)) {
@@ -169,7 +234,29 @@ class StateHandler extends EventHandler {
     if (this.isPlayerNotFound(message)) {
       let user = message.split(' ')[8].slice(1, -1)
 
-      return this.minecraft.broadcastCleanEmbed({ message: `Player \`${user}\` not found.`, color: 'DC143C' })
+      return this.minecraft.broadcastCleanEmbed({ message: `Player \`${user}\` not found.`, color: 0xDC143C })
+    }
+
+    if (this.isOnlineMemberMessage(message)) {
+      let number = message.split(':')[1].slice(1)
+
+      return this.minecraft.app.discord.client.channels.fetch(this.minecraft.app.config.discord.onlineGuildMemberChannel).then(channel => {
+        channel.setName(`Online Members: ${number}`)
+      })
+    }
+
+    if (this.isPartyInvite(message)) {
+      let user = message.replace(/\[(.*?)\]/g, '').trim().split(/ +/g)[1]
+      this.minecraft.app.log.minecraft(`${user} used fragbot`)
+
+      this.bot.chat(`/p accept ${user}`)
+      setTimeout(() => {
+        this.bot.chat(`/pc You have 7s to join a dungeon`)
+      }, 200);
+      return setTimeout(() => {
+        this.bot.chat(`/p leave`)
+        this.bot.chat(`/lobby`)
+      }, 7000);
     }
 
     if (!this.isGuildMessage(message)) {
@@ -201,6 +288,16 @@ class StateHandler extends EventHandler {
       return
     }
 
+    let patern = /^[a-zA-Z]/
+    if (!patern.test(playerMessage)) {
+      try {
+        if (eval(playerMessage) !== false) {
+          this.minecraft.app.log.commands(`${username} asked ${playerMessage} = ${eval(playerMessage)}`)
+          return this.bot.chat(`/gc ${eval(playerMessage)}`)
+        }
+      } catch (error) { }
+    }
+
     this.minecraft.broadcastMessage({
       username: username,
       message: playerMessage,
@@ -222,6 +319,10 @@ class StateHandler extends EventHandler {
 
   isLoginMessage(message) {
     return message.startsWith('Guild >') && message.endsWith('joined.') && !message.includes(':')
+  }
+
+  isFriendLoginMessage(message) {
+    return message.startsWith('Friend >') && message.endsWith('joined.') && !message.includes(':')
   }
 
   isLogoutMessage(message) {
@@ -319,6 +420,24 @@ class StateHandler extends EventHandler {
   isPlayerNotFound(message) {
     return message.startsWith(`Can't find a player by the name of`)
   }
+
+
+  isTotalMemberMessage(message) {
+    return message.startsWith('Total Members:')
+  }
+  isOnlineMemberMessage(message) {
+    return message.startsWith('Online Members:')
+  }
+  isOfflineMemberMessage(message) {
+    return message.startsWith('Offline Members:')
+  }
+
+  isPartyInvite(message) {
+    return message.includes('has invited you to join their party') && message.startsWith('-----------------------------')
+  }
+
+
 }
 
 module.exports = StateHandler
+

@@ -2,7 +2,10 @@ const CommunicationBridge = require('../contracts/CommunicationBridge')
 const StateHandler = require('./handlers/StateHandler')
 const MessageHandler = require('./handlers/MessageHandler')
 const CommandHandler = require('./CommandHandler')
-const Discord = require('discord.js-light')
+
+
+const Discord = require('discord.js')
+// const { Client, GatewayIntentBits } = require('discord.js');
 
 class DiscordManager extends CommunicationBridge {
   constructor(app) {
@@ -11,7 +14,8 @@ class DiscordManager extends CommunicationBridge {
     this.app = app
 
     this.stateHandler = new StateHandler(this)
-    this.messageHandler = new MessageHandler(this, new CommandHandler(this))
+    this.commandHandler = new CommandHandler(this)
+    this.messageHandler = new MessageHandler(this, this.commandHandler)
   }
 
   connect() {
@@ -22,10 +26,21 @@ class DiscordManager extends CommunicationBridge {
       cacheRoles: true,
       cacheEmojis: false,
       cachePresences: false,
-    })
+      intents: [
+        Discord.GatewayIntentBits.Guilds,
+        Discord.GatewayIntentBits.GuildMessages,
+        Discord.GatewayIntentBits.MessageContent,
+        Discord.GatewayIntentBits.GuildMembers,
+        Discord.GatewayIntentBits.GuildWebhooks,
+      ],
+    },
+    )
 
     this.client.on('ready', () => this.stateHandler.onReady())
-    this.client.on('message', message => this.messageHandler.onMessage(message))
+    this.client.on('messageCreate', message => this.messageHandler.onMessage(message))
+    this.client.on('interactionCreate', interaction => this.commandHandler.handleInteraction(interaction))
+
+
 
     this.client.login(this.app.config.discord.token).catch(error => {
       this.app.log.error(error)
@@ -36,15 +51,19 @@ class DiscordManager extends CommunicationBridge {
     process.on('SIGINT', () => this.stateHandler.onClose())
   }
 
-  onBroadcast({ username, message, guildRank }) {
+  onBroadcast({
+    username,
+    message,
+    guildRank
+  }) {
     this.app.log.broadcast(`${username} [${guildRank}]: ${message}`, `Discord`)
     switch (this.app.config.discord.messageMode.toLowerCase()) {
       case 'bot':
         this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
           channel.send({
-            embed: {
+            embeds: [{
               description: message,
-              color: '6495ED',
+              color: 0x6495ED,
               timestamp: new Date(),
               footer: {
                 text: guildRank,
@@ -53,15 +72,20 @@ class DiscordManager extends CommunicationBridge {
                 name: username,
                 icon_url: 'https://www.mc-heads.net/avatar/' + username,
               },
-            },
+            }],
           })
         })
         break
 
       case 'webhook':
         message = message.replace(/@/g, '') // Stop pinging @everyone or @here
+
         this.app.discord.webhook.send(
-          message, { username: username, avatarURL: 'https://www.mc-heads.net/avatar/' + username }
+          {
+            content: message,
+            username: `${username} [${guildRank} 🎮]`,
+            avatarURL: 'https://www.mc-heads.net/avatar/' + username
+          }
         )
         break
 
@@ -70,61 +94,107 @@ class DiscordManager extends CommunicationBridge {
     }
   }
 
-  onBroadcastCleanEmbed({ message, color }) {
+  onBroadcastSimpleMessage(message) {
+    this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
+      channel.send(message)
+    })
+  }
+
+  onBroadcastSCWebhook(message) {
+    this.app.discord.webhook.send(
+      {
+        content: message,
+        username: `SkyCrypt`,
+        avatarURL: 'https://d1udgqfupqwo5g.cloudfront.net/images/uploaded.15c60893d96574c0f2c8d378d1c1ef17.png'
+      }
+    )
+  }
+
+  onBroadcastSenitherWebhook(message) {
+    this.app.discord.webhook.send(
+      {
+        content: message,
+        username: `Senither`,
+        avatarURL: 'https://avatars.githubusercontent.com/u/8415349?s=128&v=4'
+      }
+    )
+  }
+
+  onBroadcastCleanEmbed({
+    message,
+    color
+  }) {
     this.app.log.broadcast(message, 'Event')
 
     this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
       channel.send({
-        embed: {
+        embeds: [{
           color: color,
           description: message,
-        }
+        }]
       })
     })
   }
 
-  onBroadcastHeadedEmbed({ message, title, icon, color }) {
+  onBroadcastHeadedEmbed({
+    message,
+    title,
+    icon,
+    color
+  }) {
     this.app.log.broadcast(message, 'Event')
 
     this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
       channel.send({
-        embed: {
+        embeds: [{
           color: color,
           author: {
             name: title,
             icon_url: icon,
           },
           description: message,
-        }
+        }]
       })
     })
   }
 
-  onPlayerToggle({ username, message, color }) {
+  onPlayerToggle({
+    username,
+    message,
+    color
+  }, type) {
     this.app.log.broadcast(username + ' ' + message, 'Event')
 
     switch (this.app.config.discord.messageMode.toLowerCase()) {
       case 'bot':
         this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
           channel.send({
-            embed: {
+            embeds: [{
               color: color,
               timestamp: new Date(),
               author: {
                 name: `${username} ${message}`,
                 icon_url: 'https://www.mc-heads.net/avatar/' + username,
               },
-            }
+            }]
           })
         })
         break
 
       case 'webhook':
-        this.app.discord.webhook.send({
-          username: username, avatarURL: 'https://www.mc-heads.net/avatar/' + username, embeds: [{
-            color: color,
-            description: `${username} ${message}`,
-          }]
+
+        this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
+          switch (type) {
+            case "join":
+              channel.send(`>>> <:join:943866143259648060> **${username}** joined.`)
+              break;
+            case "leave":
+              channel.send(`>>> <:left:943866472306995210> **${username}** left.`)
+              break;
+
+            default:
+              break;
+          }
         })
         break
 

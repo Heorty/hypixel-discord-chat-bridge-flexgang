@@ -7,6 +7,7 @@ class PromoteCommand extends DiscordCommand {
     this.name = 'promote'
     this.aliases = ['p', 'up']
     this.description = 'Promotes the given user by one guild rank'
+    this.level = 3
   }
 
   onCommand(message) {

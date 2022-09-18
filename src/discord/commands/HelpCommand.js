@@ -9,6 +9,7 @@ class HelpCommand extends DiscordCommand {
     this.name = 'help'
     this.aliases = ['h', 'info']
     this.description = 'Shows this help menu'
+    this.level = 1
   }
 
   onCommand(message) {
@@ -16,15 +17,15 @@ class HelpCommand extends DiscordCommand {
     let minecraftCommands = []
 
     this.discord.messageHandler.command.commands.forEach(command => {
-      discordCommands.push(`\`${command.name}\`: ${command.description}`)
+      discordCommands.push(`\`${command.name}\`: ${command.description} (level ${command.level})`)
     })
 
     this.discord.app.minecraft.chatHandler.command.commands.forEach(command => {
       minecraftCommands.push(`\`${command.name}\`: ${command.description}`)
     })
 
-    message.channel.send({
-      embed: {
+    message.reply({
+      embeds: [{
         title: 'Help',
         description: ['`< >` = Required arguments', '`[ ]` = Optional arguments'].join('\n'),
         fields: [
@@ -46,14 +47,12 @@ class HelpCommand extends DiscordCommand {
             ].join('\n'),
           }
         ],
-        color: message.guild.me.displayHexColor,
+        color: 0x0000,
         footer: {
-          text: 'Made by Senither and neyoa ❤'
+          text: 'Made by Senither, neyoa and Heorty for FG'
         },
         timestamp: new Date()
-      }
-    }).then(helpMessage => {
-      helpMessage.delete({ timeout: 30000 })
+      }]
     })
   }
 }

@@ -7,11 +7,14 @@ class InviteCommand extends DiscordCommand {
     this.name = 'invite'
     this.aliases = ['i', 'inv']
     this.description = 'Invites the given user to the guild'
+    this.level = 3
   }
 
   onCommand(message) {
     let args = this.getArgs(message)
     let user = args.shift()
+
+    message.reply('Inviting')
 
     this.sendMinecraftMessage(`/g invite ${user ? user : ''}`)
   }
