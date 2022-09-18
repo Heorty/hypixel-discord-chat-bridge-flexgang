@@ -8,11 +8,18 @@ class CommandHandler {
 
     this.prefix = discord.app.config.discord.prefix
     this.commands = new Collection()
+    const rest = new REST({ version: '10' }).setToken(discord.app.config.discord.token);
+
+
     let commandFiles = fs.readdirSync('./src/discord/commands').filter(file => file.endsWith('.js'))
     for (const file of commandFiles) {
       const command = new (require(`./commands/${file}`))(discord)
       this.commands.set(command.name, command)
     }
+    
+    rest.put(Routes.applicationGuildCommands("881520629378056262", "846833051685748766"), { body: this.commands })
+      .then(data => console.log(`Successfully registered ${data.length} application commands.`))
+      .catch(console.error);
   }
 
   handle(message) {
